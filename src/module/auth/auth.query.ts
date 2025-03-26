@@ -19,7 +19,7 @@ export class AuthQuery {
   }
 
   findUserByEmail(email: string) {
-    const query = `SELECT u.userId,u.fullName,u.screenName,u.email,u.dob,u.imageUrl,u.userRole,u.lat,u.long,u.introduction,u.pageNo
+    const query = `SELECT u.userId,u.fullName,u.screenName,u.email,u.dob,u.imageUrl,u.userRole,u.latitude,u.longitude,u.introduction,u.pageNo
       FROM ${TableName.Table_Users} as u where u.email='${email}'`;
     // console.log('🚀 ~ UserQueries ~ findUserByEmail ~ query:', query);
 
@@ -58,7 +58,4 @@ export class AuthQuery {
       query: query,
     };
   }
-
- 
-
 }

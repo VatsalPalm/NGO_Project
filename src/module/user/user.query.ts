@@ -24,7 +24,7 @@ export class UserQueries {
   }
 
   findUserByEmail(email: string) {
-    const query = `SELECT u.userId,u.fullName,u.screenName,u.email,u.dob,u.imageUrl,u.userRole,u.latitude,u.longitude,u.introduction,u.pageNo,up.value as password
+    const query = `SELECT u.userId,u.fullName,u.screenName,u.email,u.dob,u.imageUrl,u.userRole,u.latitude,u.longitude,u.introduction,u.pageNo,u.deletedStatus,up.value as password
     FROM ${TableName.Table_Users} as u
     INNER JOIN ${TableName.Table_Passport} as up
     ON u.userId = up.userId WHERE up.identifier = '${email}'`;

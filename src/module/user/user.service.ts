@@ -137,6 +137,11 @@ export class UserService {
           status: 400,
           message: USER_ERROR_LOGS.USER_NOT_FOUND,
         };
+      } else if (res[0].deletedStatus === 1) {
+        return {
+          status: 400,
+          message: USER_ERROR_LOGS.USER_DELETED,
+        };
       }
       const user = res[0];
 
@@ -197,11 +202,5 @@ export class UserService {
     }
   }
 
-  findAll() {
-    return `This action returns all user`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
+  
 }

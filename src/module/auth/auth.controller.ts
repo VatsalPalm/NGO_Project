@@ -29,7 +29,14 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly userService: UserService,
   ) {}
-
+  @ApiResponse({
+    status: 201,
+    description: USER_ERROR_LOGS.USER_REGISTER_SUCCESSFULLY,
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Not Found' })
+  @ApiResponse({ status: 500, description: 'Internal Server Error' })
   @Post('/registerUser')
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.registerUser(createUserDto);

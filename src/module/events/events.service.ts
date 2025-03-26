@@ -1,26 +1,185 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { EventsQueries } from './events.query';
+import { SqlService } from '../../dbConfig/sql.service';
+import {
+  EVENT_ERROR_LOGS,
+  USER_ERROR_LOGS,
+} from 'src/common/constants/app.message';
+import * as moment from 'moment';
 
 @Injectable()
 export class EventsService {
-  create(createEventDto: CreateEventDto) {
-    return 'This action adds a new event';
+  constructor(
+    private readonly eventsQueries: EventsQueries,
+    private readonly sqlService: SqlService,
+  ) {}
+
+  async create(createEventDto: CreateEventDto, userId: number) {
+    try {
+      let data = {
+        ...createEventDto,
+        userId,
+      };
+
+      let keys = Object.keys(data);
+      let values = Object.values(data);
+
+      let updatedValues = values.map((item) => "'" + item + "'");
+
+      let result = await this.sqlService.run(
+        this.eventsQueries.InsertEvents(keys, updatedValues),
+      );
+      if (result) {
+        return {
+          status: 200,
+          message: EVENT_ERROR_LOGS.EVENT_CREATED_SUCCESSFULLY,
+        };
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
-  findAll() {
-    return `This action returns all events`;
+  async findAll(size: number, page: number) {
+    try {
+      let res = await this.sqlService.run(
+        this.eventsQueries.GetEvents(size, page),
+      );
+      if (!res || res.length == 0) {
+        return {
+          status: 400,
+          message: EVENT_ERROR_LOGS.EVENT_NOT_FOUND,
+        };
+      } else
+        return {
+          status: 200,
+          message: EVENT_ERROR_LOGS.EVENT_FOUND_SUCCESSFULLY,
+          data: res,
+        };
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} event`;
+  async findOne(id: number) {
+    try {
+      let res = await this.sqlService.run(this.eventsQueries.GetEventById(id));
+
+      if (!res || res.length == 0) {
+        return {
+          status: 400,
+          message: EVENT_ERROR_LOGS.EVENT_NOT_FOUND_BY_ID,
+        };
+      } else
+        return {
+          status: 200,
+          message: EVENT_ERROR_LOGS.EVENT_FOUND_SUCCESSFULLY,
+          data: res,
+        };
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
-  update(id: number, updateEventDto: UpdateEventDto) {
-    return `This action updates a #${id} event`;
+  async update(id: number, updateEventDto: UpdateEventDto) {
+    try {
+      let EventRes = await this.sqlService.run(
+        this.eventsQueries.GetEventById(id),
+      );
+      if (!EventRes || EventRes.length == 0) {
+        return {
+          status: 400,
+          message: EVENT_ERROR_LOGS.EVENT_NOT_FOUND,
+        };
+      } else {
+        let data = { ...updateEventDto };
+        let keys = Object.keys(data);
+
+        let updatedKeysValues = keys.map(
+          (keys) => `${keys} = '${updateEventDto[keys]}'`,
+        );
+        let updatedResult = await this.sqlService.run(
+          this.eventsQueries.UpdateEvent(id, updatedKeysValues),
+        );
+        if (!updatedResult || updatedResult.length == 0) {
+          return {
+            status: 400,
+            message: EVENT_ERROR_LOGS.EVENT_NOT_UPDATED,
+          };
+        } else {
+          return {
+            status: 200,
+            message: EVENT_ERROR_LOGS.EVENT_UPDATED_SUCCESSFULLY,
+          };
+        }
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} event`;
+  async recommendEvents(id: number) {
+    try {
+      let result = await this.sqlService.run(
+        this.eventsQueries.FindUserById(id),
+      );
+      if (result.length == 0 || !result) {
+        return {
+          status: 400,
+          message: USER_ERROR_LOGS.USER_NOT_FOUND,
+        };
+      } else {
+        let userData = result[0];
+        let Latitude = userData?.latitude;
+        let Longitude = userData?.longitude;
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async getMyCalender(
+    id: number,
+    startDate: string,
+    Interval: number,
+    page: number,
+    size: number,
+  ) {
+    try {
+      let res = await this.sqlService.run(
+        this.eventsQueries.FindEventDetailsForUser(id),
+      );
+      if (!res || res.length == 0) {
+        return {
+          status: 400,
+          message: EVENT_ERROR_LOGS.EVENT_NOT_FOUND_FOR_USER,
+        };
+      } else {
+        let eventResult = await this.sqlService.run(
+          this.eventsQueries.FindEventDetailsForMyCalendar(
+            startDate,
+            Interval,
+            page,
+            size,
+          ),
+        );
+        if (!eventResult || eventResult.length == 0) {
+          return {
+            status: 400,
+            message: EVENT_ERROR_LOGS.EVENT_NOT_FOUND_FOR_MY_CALENDER,
+          };
+        } else {
+          return {
+            status: 200,
+            message: EVENT_ERROR_LOGS.EVENT_FOUND_SUCCESSFULLY,
+            data: eventResult,
+          };
+        }
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }
