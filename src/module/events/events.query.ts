@@ -1,4 +1,4 @@
-import { TableName } from 'src/common/constants/app.table_entity';
+import { TableName } from '../../common/constants/app.table_entity';
 
 export class EventsQueries {
   InsertEvents(keys: any, values: any) {
@@ -78,8 +78,22 @@ export class EventsQueries {
   ) {
     let query = `select * from eventTb where eventStartDate >= '${satrtDate}'  AND eventStartDate <= DATE_ADD('${satrtDate}',INTERVAL ${Interval} DAY) LIMIT ${size} OFFSET ${page}`;
 
+    // console.log('🚀 ~ EventsQueries ~ query:', query);
     return {
       name: 'FIND EVENT DETAILS FOR MY CALENDER',
+      type: 'SELECT',
+      query: query,
+    };
+  }
+
+  FindRecommendedEvents(userLat: string, userLong: string) {
+    let query = `SELECT * FROM eventTb AS e
+                WHERE ST_Distance_Sphere(
+                POINT(e.eventLat, e.eventLong), 
+                POINT(${userLat}, ${userLong})
+                 ) <= 50000;`;
+    return {
+      name: 'FIND Recommended Events DETAILS FOR USER',
       type: 'SELECT',
       query: query,
     };

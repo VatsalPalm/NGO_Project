@@ -11,8 +11,8 @@ import {
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
-import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
-import { EVENT_ERROR_LOGS } from 'src/common/constants/app.message';
+import { ApiBearerAuth, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { EVENT_ERROR_LOGS } from '../../common/constants/app.message';
 
 @Controller('events')
 @ApiBearerAuth()
@@ -28,6 +28,18 @@ export class EventsController {
     description: EVENT_ERROR_LOGS.EVENT_NOT_FOUND,
   })
   @Get('/getAllEvents/:page/:size')
+  @ApiParam({
+    name: 'page',
+    type: String,
+    description: 'Page no for pagination',
+    example: '0',
+  })
+  @ApiParam({
+    name: 'size',
+    type: String,
+    description: 'size of the page',
+    example: '10',
+  })
   findAll(@Param('page') page: number, @Param('size') size: number) {
     page *= 10;
     return this.eventsService.findAll(size, page);
@@ -41,6 +53,12 @@ export class EventsController {
     description: EVENT_ERROR_LOGS.EVENT_NOT_FOUND_BY_ID,
   })
   @Get('/getEventById/:id')
+  @ApiParam({
+    name: 'id',
+    type: String,
+    description: 'Unique identifier for the event',
+    example: '123',
+  })
   findOne(@Param('id') id: string) {
     return this.eventsService.findOne(+id);
   }
@@ -66,6 +84,30 @@ export class EventsController {
     description: EVENT_ERROR_LOGS.EVENT_NOT_FOUND_BY_ID,
   })
   @Get('/getMyCalender/:startDate/:Interval/:page/:size')
+  @ApiParam({
+    name: 'startDate',
+    type: String,
+    description: 'Date of the event',
+    example: '2023-08-01',
+  })
+  @ApiParam({
+    name: 'Interval',
+    type: String,
+    description: 'How many days after the event',
+    example: '2',
+  })
+  @ApiParam({
+    name: 'page',
+    type: String,
+    description: 'Page no for pagination',
+    example: '0',
+  })
+  @ApiParam({
+    name: 'size',
+    type: String,
+    description: 'size of the page',
+    example: '10',
+  })
   getMyCalendar(
     @Req() req: any,
     @Param('page') page: number,
@@ -101,6 +143,17 @@ export class EventsController {
   })
   @Patch('/updateEvent/:id')
   update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
-    return this.eventsService.update(+id, updateEventDto);
+    console.log(
+      '🚀 ~ EventsController ~ update ~ updateEventDto:',
+      updateEventDto,
+    );
+    if (!updateEventDto || Object.keys(updateEventDto).length === 0) {
+      return {
+        status: 400,
+        message: EVENT_ERROR_LOGS.NO_DATA_FOUND,
+      };
+    } else {
+      return this.eventsService.update(+id, updateEventDto);
+    }
   }
 }

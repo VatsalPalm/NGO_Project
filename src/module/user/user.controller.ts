@@ -14,7 +14,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryExceptionFilter } from '../../Exceptions-Filters/query-exception.filter';
 import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
-import { USER_ERROR_LOGS } from 'src/common/constants/app.message';
+import { USER_ERROR_LOGS } from '../../common/constants/app.message';
 
 @Controller('user')
 @UseFilters(QueryExceptionFilter)

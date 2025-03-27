@@ -87,13 +87,13 @@ export class CreateUserDto {
   })
   @Type(() => Date)
   dob: Date;
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'Image Url',
-    example: 'https://example.com/image.jpg',
-  })
-  imageUrl: string;
+  // @IsString()
+  // @IsNotEmpty()
+  // @ApiProperty({
+  //   description: 'Image Url',
+  //   example: 'https://example.com/image.jpg',
+  // })
+  // imageUrl: string;
   @IsEnum(userRole)
   @IsNotEmpty()
   @ApiProperty({
@@ -122,13 +122,13 @@ export class CreateUserDto {
     example: 'Hello, I am John Doe.',
   })
   introduction: string;
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
   @ApiProperty({
     description: 'pageNo',
     example: 1,
   })
-  pageNo: number;
+  pageNo: string;
 
   @IsString()
   @IsNotEmpty()
@@ -139,21 +139,37 @@ export class CreateUserDto {
   })
   password: string;
 
+  // @IsNotEmpty()
+  // @IsString()
+  // @ApiProperty({
+  //   description: 'File Upload',
+  //   example: '',
+  // })
+  // file: string;
+
   @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => SubCategory)
+  // @ValidateNested()
+  // @Type(() => SubCategory)
   @ApiProperty({
     description: 'Category',
-    type: () => SubCategory,
+    example: {
+      subCategoryId: 1,
+      subCategoryName: 'say no to drugs',
+    },
   })
   subCategory: SubCategory;
 
   @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => device)
+  // @ValidateNested()
+  // @Type(() => device)
   @ApiProperty({
     description: 'Device details',
-    type: () => device,
+    // type: () => device,
+    example: {
+      deviceType: 'ios',
+      os: 'ios',
+      deviceName: 'iPhone 14',
+    },
   })
   device: device;
 }

@@ -6,7 +6,7 @@ import {
   eventGender,
   meetingType,
   eventType,
-} from 'src/common/constants/app.enum';
+} from '../../../common/constants/app.enum';
 
 export class UpdateEventDto extends PartialType(CreateEventDto) {
   @IsNumber()

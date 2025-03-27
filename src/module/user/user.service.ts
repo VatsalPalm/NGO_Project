@@ -19,7 +19,7 @@ export class UserService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async registerUser(createUserDto: CreateUserDto) {
+  async registerUser(createUserDto: CreateUserDto, image: any) {
     const queryRunner: QueryRunner = await this.sqlService.startTransaction();
     try {
       const insertMessage = [
@@ -27,24 +27,30 @@ export class UserService {
         'screenName',
         'email',
         'dob',
-        'imageUrl',
         'userRole',
         'latitude',
         'longitude',
         'introduction',
         'pageNo',
       ];
+
       const Keys = _.pick(createUserDto, insertMessage);
       const keys = Object.keys(Keys);
       const values = Object.values(Keys);
+
+      keys.push('imageUrl');
+      values.push(image?.originalname);
+
       const userUpdatedValues = values.map((value) => "'" + value + "'");
       let hasPassword = bcrypt.hashSync(createUserDto.password, 10);
 
       // User Insert
+
       let resUser = await this.sqlService.runWithTransaction(
         queryRunner,
         this.userQueries.createUser(keys, userUpdatedValues),
       );
+
       let InsertedUserId = resUser?.insertId;
 
       let accessToken = this.jwtService.sign({
@@ -73,7 +79,7 @@ export class UserService {
       //Sub Categoryy Insert
       let SubCategoryObj = {
         userId: InsertedUserId,
-        subCategoryId: createUserDto.subCategory?.subCategoryId,
+        subCategoryId: createUserDto?.subCategory?.subCategoryId,
       };
       const SubCategoryKeys = Object.keys(SubCategoryObj);
       const SubCategoryValues = Object.values(SubCategoryObj);
@@ -110,16 +116,28 @@ export class UserService {
         this.userQueries.userSession(keysSession, ValuesUpdatedSession),
       );
       await this.sqlService.commitTransaction(queryRunner);
-      return {
-        status: 200,
-        message: USER_ERROR_LOGS.USER_REGISTER_SUCCESSFULLY,
-        data: {
-          accessToken: accessToken,
-          refreshToken: refreshToken,
-        },
-      };
+
+      if (!UserSessionRes || UserSessionRes.length == 0) {
+        return {
+          status: 200,
+          message: USER_ERROR_LOGS.USER_NOT_REGISTERED,
+          data: {
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+          },
+        };
+      } else {
+        return {
+          status: 200,
+          message: USER_ERROR_LOGS.USER_REGISTER_SUCCESSFULLY,
+          data: {
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+          },
+        };
+      }
     } catch (error) {
-      console.log('🚀 ~ UserService ~ registerUser ~ error:', error);
+      // console.log('🚀 ~ UserService ~ registerUser ~ error:', error);
       await this.sqlService.rollBackTransaction(queryRunner);
       throw new InternalServerErrorException(error?.message);
     }
@@ -201,6 +219,4 @@ export class UserService {
       throw new InternalServerErrorException(error?.message);
     }
   }
-
-  
 }

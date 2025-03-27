@@ -38,4 +38,5 @@ export enum EVENT_ERROR_LOGS {
   EVENT_NOT_FOUND_BY_ID = 'Event not found by id',
   EVENT_NOT_FOUND_FOR_USER = 'Event not found for user',
   EVENT_NOT_FOUND_FOR_MY_CALENDER = 'Event not found for my calender',
+  NO_DATA_FOUND = 'No data found for update',
 }

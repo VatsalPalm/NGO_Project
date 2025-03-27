@@ -33,19 +33,19 @@ export class AppModule {
       .apply(AuthMiddleware)
       .exclude(
         {
-          path: 'auth/loginUser',
+          path: '/auth/loginUser',
           method: RequestMethod.POST,
         },
         {
-          path: 'auth/registerUser',
+          path: '/auth/registerUser',
           method: RequestMethod.POST,
         },
         {
-          path: 'auth/verifyOtp',
+          path: '/auth/verifyOtp',
           method: RequestMethod.POST,
         },
         {
-          path: 'auth/createOtp',
+          path: '/auth/createOtp',
           method: RequestMethod.POST,
         },
       )

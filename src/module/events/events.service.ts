@@ -6,8 +6,7 @@ import { SqlService } from '../../dbConfig/sql.service';
 import {
   EVENT_ERROR_LOGS,
   USER_ERROR_LOGS,
-} from 'src/common/constants/app.message';
-import * as moment from 'moment';
+} from '../../common/constants/app.message';
 
 @Injectable()
 export class EventsService {
@@ -85,6 +84,8 @@ export class EventsService {
 
   async update(id: number, updateEventDto: UpdateEventDto) {
     try {
+      let data = { ...updateEventDto };
+      console.log('🚀 ~ EventsService ~ update ~ data:', data);
       let EventRes = await this.sqlService.run(
         this.eventsQueries.GetEventById(id),
       );
@@ -94,7 +95,6 @@ export class EventsService {
           message: EVENT_ERROR_LOGS.EVENT_NOT_FOUND,
         };
       } else {
-        let data = { ...updateEventDto };
         let keys = Object.keys(data);
 
         let updatedKeysValues = keys.map(
@@ -134,6 +134,22 @@ export class EventsService {
         let userData = result[0];
         let Latitude = userData?.latitude;
         let Longitude = userData?.longitude;
+
+        let resRecommended = await this.sqlService.run(
+          this.eventsQueries.FindRecommendedEvents(Latitude, Longitude),
+        );
+        if (!resRecommended || resRecommended.length == 0) {
+          return {
+            status: 400,
+            message: EVENT_ERROR_LOGS.EVENT_NOT_FOUND,
+          };
+        } else {
+          return {
+            status: 200,
+            message: EVENT_ERROR_LOGS.EVENT_FOUND_SUCCESSFULLY,
+            data: resRecommended,
+          };
+        }
       }
     } catch (error) {
       throw new InternalServerErrorException(error);

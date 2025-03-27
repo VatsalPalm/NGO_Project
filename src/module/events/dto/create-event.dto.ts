@@ -4,7 +4,7 @@ import {
   eventGender,
   eventType,
   meetingType,
-} from 'src/common/constants/app.enum';
+} from '../../../common/constants/app.enum';
 
 export class CreateEventDto {
   @IsNumber()
