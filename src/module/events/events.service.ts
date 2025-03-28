@@ -7,6 +7,7 @@ import {
   EVENT_ERROR_LOGS,
   USER_ERROR_LOGS,
 } from '../../common/constants/app.message';
+import { EventListDto } from './dto/event-list.dto';
 
 @Injectable()
 export class EventsService {
@@ -41,11 +42,15 @@ export class EventsService {
     }
   }
 
-  async findAll(size: number, page: number) {
+  async findAll(eventListDto: EventListDto) {
     try {
-      let res = await this.sqlService.run(
-        this.eventsQueries.GetEvents(size, page),
+      let page = eventListDto.page;
+      let limit = eventListDto.limit;
+      let res = await this.sqlService.run(this.eventsQueries.GetEvents(page,limit));
+      let countRes = await this.sqlService.run(
+        this.eventsQueries.GetEventCount(),
       );
+
       if (!res || res.length == 0) {
         return {
           status: 400,

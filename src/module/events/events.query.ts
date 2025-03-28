@@ -10,7 +10,7 @@ export class EventsQueries {
     };
   }
 
-  GetEvents(size: number, page: number) {
+  GetEvents(page: number, limit: number) {
     let query = `SELECT eventId,userId,gender,eventStartDate,eventEndDate,
     eventStartTime,
     eventEndTime,meetingType,participantsCount
@@ -19,10 +19,19 @@ export class EventsQueries {
     FROM ${TableName.Table_Event} as ev
     LEFT JOIN ${TableName.Table_Category} as cat
     ON ev.categoryId = cat.categoryId
-    LIMIT ${size} OFFSET ${page}
+    LIMIT ${limit} OFFSET ${page}
     `;
     return {
       name: 'GET EVENTS',
+      type: 'SELECT',
+      query: query,
+    };
+  }
+
+  GetEventCount() {
+    let query = `SELECT COUNT(*) FROM ${TableName.Table_Event}`;
+    return {
+      name: 'GET EVENT COUNT',
       type: 'SELECT',
       query: query,
     };

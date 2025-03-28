@@ -19,7 +19,7 @@ export class UserService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async registerUser(createUserDto: CreateUserDto, image: any) {
+  async registerUser(createUserDto: any, image: any) {
     const queryRunner: QueryRunner = await this.sqlService.startTransaction();
     try {
       const insertMessage = [
@@ -33,49 +33,43 @@ export class UserService {
         'introduction',
         'pageNo',
       ];
-
       const Keys = _.pick(createUserDto, insertMessage);
       const keys = Object.keys(Keys);
       const values = Object.values(Keys);
-
       keys.push('imageUrl');
       values.push(image?.originalname);
-
+      createUserDto.subCategory = createUserDto.subCategory
+        ? JSON.parse(createUserDto.subCategory)
+        : null;
+      createUserDto.device = createUserDto.device
+        ? JSON.parse(createUserDto.device)
+        : null;
       const userUpdatedValues = values.map((value) => "'" + value + "'");
       let hasPassword = bcrypt.hashSync(createUserDto.password, 10);
-
       // User Insert
-
       let resUser = await this.sqlService.runWithTransaction(
         queryRunner,
         this.userQueries.createUser(keys, userUpdatedValues),
       );
-
       let InsertedUserId = resUser?.insertId;
-
       let accessToken = this.jwtService.sign({
         payload: createUserDto,
         userId: InsertedUserId,
       });
       let refreshToken = refreshTokenGenrator(6);
-
       // Password Insert
       let passWordObj = {
         userId: InsertedUserId,
         identifier: createUserDto.email,
         value: hasPassword,
       };
-
       const pwdKeys = Object.keys(passWordObj);
       const pwdValues = Object.values(passWordObj);
-
       const PwdUpdatedValues = pwdValues.map((value) => "'" + value + "'");
-
       await this.sqlService.runWithTransaction(
         queryRunner,
         this.userQueries.passwordInsert(pwdKeys, PwdUpdatedValues),
       );
-
       //Sub Categoryy Insert
       let SubCategoryObj = {
         userId: InsertedUserId,
@@ -93,7 +87,6 @@ export class UserService {
           SubCategoryUpdatedValues,
         ),
       );
-
       // User Session Data Insert
       let UserSessionObj = {
         userId: InsertedUserId,
@@ -103,20 +96,16 @@ export class UserService {
         os: createUserDto.device?.os,
         deviceName: createUserDto?.device?.deviceName,
       };
-
       let keysSession = Object.keys(UserSessionObj);
       const valuesSession = Object.values(UserSessionObj);
-
       const ValuesUpdatedSession = valuesSession.map(
         (value) => "'" + value + "'",
       );
-
       let UserSessionRes = await this.sqlService.runWithTransaction(
         queryRunner,
         this.userQueries.userSession(keysSession, ValuesUpdatedSession),
       );
       await this.sqlService.commitTransaction(queryRunner);
-
       if (!UserSessionRes || UserSessionRes.length == 0) {
         return {
           status: 200,

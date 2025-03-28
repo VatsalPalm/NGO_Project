@@ -14,25 +14,19 @@ import {
 } from 'class-validator';
 import { userRole } from '../../../common/constants/app.enum';
 
-class SubCategory {
-  @ApiProperty({
-    description: 'Sub Category ID',
-    example: 1,
-  })
-  @IsNumber()
-  @IsNotEmpty()
-  subCategoryId: number;
-
-  @ApiProperty({
-    description: 'Sub Category Name',
-    example: 'say no to drugs',
-  })
+class SubCategoryDto {
   @IsString()
   @IsNotEmpty()
+  @ApiProperty({ example: '1' })
+  subCategoryId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: 'Say No to Drugs' })
   subCategoryName: string;
 }
 
-class device {
+class DeviceDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -40,23 +34,22 @@ class device {
     example: 'ios',
   })
   deviceType: string;
+
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({
-    description: 'os',
-    example: 'ios',
-  })
+  @ApiProperty({ example: 'ios' })
   os: string;
+
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({
-    description: 'device Name',
-    example: 'iPhone 14',
-  })
+  @ApiProperty({ example: 'iPhone 14' })
   deviceName: string;
 }
 
 export class CreateUserDto {
+  @ApiProperty({ type: 'array', items: { type: 'string', format: 'binary' } })
+  files: Express.Multer.File[];
+
   @ApiProperty({
     description: 'Full Name',
     example: 'John Doe',
@@ -87,13 +80,7 @@ export class CreateUserDto {
   })
   @Type(() => Date)
   dob: Date;
-  // @IsString()
-  // @IsNotEmpty()
-  // @ApiProperty({
-  //   description: 'Image Url',
-  //   example: 'https://example.com/image.jpg',
-  // })
-  // imageUrl: string;
+
   @IsEnum(userRole)
   @IsNotEmpty()
   @ApiProperty({
@@ -139,37 +126,92 @@ export class CreateUserDto {
   })
   password: string;
 
-  // @IsNotEmpty()
-  // @IsString()
-  // @ApiProperty({
-  //   description: 'File Upload',
-  //   example: '',
-  // })
-  // file: string;
-
+  @IsObject()
   @IsNotEmpty()
-  // @ValidateNested()
-  // @Type(() => SubCategory)
-  @ApiProperty({
-    description: 'Category',
-    example: {
-      subCategoryId: 1,
-      subCategoryName: 'say no to drugs',
-    },
-  })
-  subCategory: SubCategory;
+  @ApiProperty({ type: SubCategoryDto })
+  subCategory: SubCategoryDto;
 
+  @IsObject()
   @IsNotEmpty()
-  // @ValidateNested()
-  // @Type(() => device)
-  @ApiProperty({
-    description: 'Device details',
-    // type: () => device,
-    example: {
-      deviceType: 'ios',
-      os: 'ios',
-      deviceName: 'iPhone 14',
-    },
-  })
-  device: device;
+  @ApiProperty({ type: DeviceDto })
+  device: DeviceDto;
 }
+
+// export class CreateUserDto {
+//   @ApiProperty({ type: 'array', items: { type: 'string', format: 'binary' } })
+//   files: Express.Multer.File[];
+
+//   @IsString()
+//   @ApiProperty({ example: 'John Doe' })
+//   fullName: string;
+
+//   @IsString()
+//   @ApiProperty({ example: 'johndoe' })
+//   screenName: string;
+
+//   @IsString()
+//   @ApiProperty({ example: 'johndoe@example.com' })
+//   email: string;
+
+//   @IsString()
+//   @ApiProperty({ example: '2000-01-01' })
+//   dob: string;
+
+//   @IsString()
+//   @ApiProperty({ example: 'user' })
+//   userRole: string;
+
+//   @IsString()
+//   @ApiProperty({ example: '12.9716' })
+//   latitude: string;
+
+//   @IsString()
+//   @ApiProperty({ example: '77.5946' })
+//   longitude: string;
+
+//   @IsString()
+//   @ApiProperty({ example: 'This is my introduction' })
+//   introduction: string;
+
+//   @IsString()
+//   @ApiProperty({ example: 'test@123' })
+//   password: string;
+
+//   @ApiProperty({ example: 1 })
+//   pageNo: number;
+
+//   @IsObject()
+//   @ApiProperty({ type: SubCategoryDto })
+//   subCategory: SubCategoryDto;
+
+//   @IsObject()
+//   @ApiProperty({ type: DeviceDto })
+//   device: DeviceDto;
+
+// @IsNotEmpty()
+//   // @ValidateNested()
+//   // @Type(() => SubCategory)
+//   @ApiProperty({
+//     description: 'Category',
+//     example: {
+//       subCategoryId: 1,
+//       subCategoryName: 'say no to drugs',
+//     },
+//   })
+//   subCategory: object;
+
+//   @IsNotEmpty()
+//   // @ValidateNested()
+//   // @Type(() => device)
+//   @ApiProperty({
+//     description: 'Device details',
+//     // type: () => device,
+//     example: {
+//       deviceType: 'ios',
+//       os: 'ios',
+//       deviceName: 'iPhone 14',
+//     },
+//   })
+//   device: object;
+
+// }

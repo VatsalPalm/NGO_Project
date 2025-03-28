@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
   Req,
+  Query,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { ApiBearerAuth, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { EVENT_ERROR_LOGS } from '../../common/constants/app.message';
+import { EventListDto } from './dto/event-list.dto';
 
 @Controller('events')
 @ApiBearerAuth()
@@ -27,22 +29,24 @@ export class EventsController {
     status: 400,
     description: EVENT_ERROR_LOGS.EVENT_NOT_FOUND,
   })
-  @Get('/getAllEvents/:page/:size')
-  @ApiParam({
-    name: 'page',
-    type: String,
-    description: 'Page no for pagination',
-    example: '0',
-  })
-  @ApiParam({
-    name: 'size',
-    type: String,
-    description: 'size of the page',
-    example: '10',
-  })
-  findAll(@Param('page') page: number, @Param('size') size: number) {
-    page *= 10;
-    return this.eventsService.findAll(size, page);
+
+  // @ApiParam({
+  //   name: 'page',
+  //   type: String,
+  //   description: 'Page no for pagination',
+  //   example: '0',
+  // })
+  // @ApiParam({
+  //   name: 'size',
+  //   type: String,
+  //   description: 'size of the page',
+  //   example: '10',
+  // })
+  @Get('/getAllEvents')
+  findAll(@Query() eventListDto: EventListDto) {
+    // @Param('page') page: number, @Param('size') size: number
+    // page *= 10;
+    return this.eventsService.findAll(eventListDto);
   }
   @ApiResponse({
     status: 200,

@@ -26,9 +26,6 @@ import { CreateOtpDto } from './dto/create-otp.dto';
 import { VerifyOtp } from './dto/verify-otp.dto';
 import { QueryExceptionFilter } from '../../Exceptions-Filters/query-exception.filter';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { UploadImageDto } from '../../common/dto/uploadFile.dto';
-import { ApiFile } from '../../../swagger.schemaFile';
 
 @Controller('auth')
 @UseFilters(QueryExceptionFilter)
@@ -48,107 +45,100 @@ export class AuthController {
   @Post('/registerUser')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        files: {
-          type: 'array',
-          items: {
-            type: 'string',
-            format: 'binary',
-            description: 'The file to upload',
-          },
-        },
-        fullName: {
-          type: 'string',
-          example: 'John Doe',
-        },
-        screenName: {
-          type: 'string',
-          example: 'johndoe',
-        },
-        email: {
-          type: 'string',
-          example: 'johndoe@example.com',
-        },
-        dob: {
-          type: 'string',
-          example: '2000-01-01',
-        },
-        userRole: {
-          type: 'string',
-          example: 'user',
-        },
-        latitude: {
-          type: 'string',
-          example: '12.9716',
-        },
-        longitude: {
-          type: 'string',
-          example: '77.5946',
-        },
-        introduction: {
-          type: 'string',
-          example: 'This is my introduction',
-        },
-        password: {
-          type: 'string',
-          example: 'test@123',
-        },
-        pageNo: {
-          type: 'number',
-          example: 1,
-        },
-        subCategory: {
-          type: 'object',
-          properties: {
-            subCategoryId: {
-              type: 'string',
-              example: '1',
-            },
-            subCategoryName: {
-              type: 'string',
-              example: 'Say No to Drugs',
-            },
-          },
-        },
-        device: {
-          type: 'object',
-          properties: {
-            deviceType: {
-              type: 'string',
-              example: 'ios',
-            },
-            os: {
-              type: 'string',
-              example: 'ios',
-            },
-            deviceName: {
-              type: 'string',
-              example: 'iPhone 14',
-            },
-          },
-        },
-      },
-    },
+    type: CreateUserDto,
+    // schema: {
+    //   properties: {
+    //     files: {
+    //       type: 'array',
+    //       items: {
+    //         type: 'string',
+    //         format: 'binary',
+    //         description: 'The file to upload',
+    //       },
+    //     },
+    //     // fullName: {
+    //     //   type: 'string',
+    //     //   example: 'John Doe',
+    //     // },
+    //     // screenName: {
+    //     //   type: 'string',
+    //     //   example: 'johndoe',
+    //     // },
+    //     // email: {
+    //     //   type: 'string',
+    //     //   example: 'johndoe@example.com',
+    //     // },
+    //     // dob: {
+    //     //   type: 'string',
+    //     //   example: '2000-01-01',
+    //     // },
+    //     // userRole: {
+    //     //   type: 'string',
+    //     //   example: 'user',
+    //     // },
+    //     // latitude: {
+    //     //   type: 'string',
+    //     //   example: '12.9716',
+    //     // },
+    //     // longitude: {
+    //     //   type: 'string',
+    //     //   example: '77.5946',
+    //     // },
+    //     // introduction: {
+    //     //   type: 'string',
+    //     //   example: 'This is my introduction',
+    //     // },
+    //     // password: {
+    //     //   type: 'string',
+    //     //   example: 'test@123',
+    //     // },
+    //     // pageNo: {
+    //     //   type: 'number',
+    //     //   example: 1,
+    //     // },
+    //     // subCategory: {
+    //     //   type: 'array',
+    //     //   properties: {
+    //     //     subCategoryId: {
+    //     //       type: 'string',
+    //     //       example: '1',
+    //     //     },
+    //     //     subCategoryName: {
+    //     //       type: 'string',
+    //     //       example: 'Say No to Drugs',
+    //     //     },
+    //     //   },
+    //     // },
+    //     // device: {
+    //     //   type: 'array',
+    //     //   properties: {
+    //     //     deviceType: {
+    //     //       type: 'string',
+    //     //       example: 'ios',
+    //     //     },
+    //     //     os: {
+    //     //       type: 'string',
+    //     //       example: 'ios',
+    //     //     },
+    //     //     deviceName: {
+    //     //       type: 'string',
+    //     //       example: 'iPhone 14',
+    //     //     },
+    //     //   },
+    //     // },
+    //   },
+    // },
   })
   @UseInterceptors(FileInterceptor('files')) // Note the 'files' for the multiple files
-  async create(
-    @Body() createUserDto: CreateUserDto,
-    @UploadedFile() image: Express.Multer.File,
-  ) {
-    // console.log('🚀 ~ AuthController ~ createUserDto:', createUserDto);
-    // console.log('🚀 ~ StudController ~ image:', image);
-
+  async create(@Body() body: any, @UploadedFile() image: Express.Multer.File) {
     if (!image) {
-      console.log('🚀 ~ StudController ~ HttpException:', HttpException);
       throw new HttpException(
         'Controller--No file uploaded or missing filename',
         HttpStatus.BAD_REQUEST,
       );
     }
 
-    return await this.userService.registerUser(createUserDto, image);
+    return await this.userService.registerUser(body, image);
   }
 
   @ApiResponse({
