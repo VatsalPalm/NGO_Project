@@ -8,10 +8,8 @@ import {
   IsString,
   Max,
   Min,
-} from 'class-validator'; // IsEnum,
+} from 'class-validator';
 import { Pagination } from '../constants/app.pagination';
-
-// import { Order } from "../constants/order";
 
 export class PageOptionsDto {
   @ApiPropertyOptional({
@@ -56,10 +54,4 @@ export class PageOptionsDto {
   @IsNotEmpty()
   @IsOptional()
   readonly q?: string;
-
-  //   @ApiPropertyOptional({ description: "If Task Id is available" })
-  //   @IsNumber()
-  //   @IsNotEmpty()
-  //   @IsOptional()
-  //   readonly taskId: number;
 }

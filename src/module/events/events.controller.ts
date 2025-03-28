@@ -44,8 +44,6 @@ export class EventsController {
   // })
   @Get('/getAllEvents')
   findAll(@Query() eventListDto: EventListDto) {
-    // @Param('page') page: number, @Param('size') size: number
-    // page *= 10;
     return this.eventsService.findAll(eventListDto);
   }
   @ApiResponse({
@@ -76,8 +74,8 @@ export class EventsController {
     description: EVENT_ERROR_LOGS.EVENT_NOT_FOUND_BY_ID,
   })
   @Get('/getRecommendedEvents')
-  getRecommendedEvents(@Req() req: any) {
-    return this.eventsService.recommendEvents(req?.users?.userId);
+  getRecommendedEvents(@Req() req: any, @Query() eventListDto: EventListDto) {
+    return this.eventsService.recommendEvents(req?.users?.userId, eventListDto);
   }
   @ApiResponse({
     status: 200,
@@ -87,7 +85,7 @@ export class EventsController {
     status: 400,
     description: EVENT_ERROR_LOGS.EVENT_NOT_FOUND_BY_ID,
   })
-  @Get('/getMyCalender/:startDate/:Interval/:page/:size')
+  @Get('/getMyCalender/:startDate/:Interval')
   @ApiParam({
     name: 'startDate',
     type: String,
@@ -100,32 +98,15 @@ export class EventsController {
     description: 'How many days after the event',
     example: '2',
   })
-  @ApiParam({
-    name: 'page',
-    type: String,
-    description: 'Page no for pagination',
-    example: '0',
-  })
-  @ApiParam({
-    name: 'size',
-    type: String,
-    description: 'size of the page',
-    example: '10',
-  })
   getMyCalendar(
     @Req() req: any,
-    @Param('page') page: number,
-    @Param('size') size: number,
     @Param('startDate') startDate: string,
     @Param('Interval') Interval: number,
   ) {
-    page *= 10;
     return this.eventsService.getMyCalender(
       req?.users?.userId,
       startDate,
       Interval,
-      page,
-      size,
     );
   }
   @ApiResponse({

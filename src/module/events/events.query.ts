@@ -10,7 +10,7 @@ export class EventsQueries {
     };
   }
 
-  GetEvents(page: number, limit: number) {
+  GetEvents(offset: number, limit: number) {
     let query = `SELECT eventId,userId,gender,eventStartDate,eventEndDate,
     eventStartTime,
     eventEndTime,meetingType,participantsCount
@@ -19,7 +19,7 @@ export class EventsQueries {
     FROM ${TableName.Table_Event} as ev
     LEFT JOIN ${TableName.Table_Category} as cat
     ON ev.categoryId = cat.categoryId
-    LIMIT ${limit} OFFSET ${page}
+    LIMIT ${limit} OFFSET ${offset}
     `;
     return {
       name: 'GET EVENTS',
@@ -29,7 +29,7 @@ export class EventsQueries {
   }
 
   GetEventCount() {
-    let query = `SELECT COUNT(*) FROM ${TableName.Table_Event}`;
+    let query = `SELECT COUNT(*) AS total FROM ${TableName.Table_Event}`;
     return {
       name: 'GET EVENT COUNT',
       type: 'SELECT',
@@ -79,13 +79,8 @@ export class EventsQueries {
     };
   }
 
-  FindEventDetailsForMyCalendar(
-    satrtDate: string,
-    Interval: number,
-    page: number,
-    size: number,
-  ) {
-    let query = `select * from eventTb where eventStartDate >= '${satrtDate}'  AND eventStartDate <= DATE_ADD('${satrtDate}',INTERVAL ${Interval} DAY) LIMIT ${size} OFFSET ${page}`;
+  FindEventDetailsForMyCalendar(satrtDate: string, Interval: number) {
+    let query = `select * from eventTb where eventStartDate >= '${satrtDate}'  AND eventStartDate <= DATE_ADD('${satrtDate}',INTERVAL ${Interval} DAY) `;
 
     // console.log('🚀 ~ EventsQueries ~ query:', query);
     return {
@@ -95,14 +90,32 @@ export class EventsQueries {
     };
   }
 
-  FindRecommendedEvents(userLat: string, userLong: string) {
+  FindRecommendedEvents(
+    userLat: string,
+    userLong: string,
+    limit: number,
+    offset: number,
+  ) {
     let query = `SELECT * FROM eventTb AS e
                 WHERE ST_Distance_Sphere(
                 POINT(e.eventLat, e.eventLong), 
                 POINT(${userLat}, ${userLong})
-                 ) <= 50000;`;
+                 ) <= 50000 LIMIT ${limit} OFFSET ${offset};`;
     return {
       name: 'FIND Recommended Events DETAILS FOR USER',
+      type: 'SELECT',
+      query: query,
+    };
+  }
+
+  FindRecommendedEventsCount(userLat: string, userLong: string) {
+    let query = `SELECT COUNT(*) AS total FROM eventTb AS e
+                WHERE ST_Distance_Sphere(
+                POINT(e.eventLat, e.eventLong), 
+                POINT(${userLat}, ${userLong})
+                 ) <= 50000`;
+    return {
+      name: 'FIND Recommended Events DETAILS COUNT FOR USER',
       type: 'SELECT',
       query: query,
     };

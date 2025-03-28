@@ -1,5 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
-
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PageResponseType {
   @ApiProperty()
@@ -7,10 +6,4 @@ export class PageResponseType {
 
   @ApiProperty()
   message: string;
-
-  // @ApiProperty()
-  // data: any
-
-  // @ApiProperty()
-  // meta: PageMetaDto
 }
