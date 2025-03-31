@@ -205,7 +205,12 @@ export class EventsService {
 
         const [data, totalCount] = await Promise.all([
           this.sqlService.run(
-            this.eventsQueries.FindRecommendedEvents(Latitude, Longitude,limit,offset),
+            this.eventsQueries.FindRecommendedEvents(
+              Latitude,
+              Longitude,
+              limit,
+              offset,
+            ),
           ),
           this.sqlService.run(
             this.eventsQueries.FindRecommendedEventsCount(Latitude, Longitude),
