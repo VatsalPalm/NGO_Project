@@ -1,0 +1,17 @@
+export enum TableName {
+  Table_Error_Log = 'errorLogTb',
+  Table_AgeGroup = 'ageGroup',
+  Table_Category = 'categoryTb',
+  Table_Constants = 'constantsTb',
+  Table_Event = 'eventTb',
+  Table_Notification = 'notificationTb',
+  Table_OtpHistory = 'otpHistoryTb',
+  Table_Otp = 'otpTb',
+  Table_Users = 'usersTb',
+  Table_Passport = 'passportTb',
+  Table_Ratings = 'ratingsTb',
+  Table_SubCategory = 'subCategoryTb',
+  Table_UserCategory = 'userCategoryTb',
+  Table_UserEvent = 'userEventTb',
+  Table_UserSession = 'userSessionTb',
+}
